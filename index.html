@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Translator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Sign In</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+
+        <h2>Translate</h2>
+        <textarea id="text" placeholder="Enter text to translate"></textarea>
+        <input type="text" id="targetLang" placeholder="Target Language">
+        <button onclick="translate()">Translate</button>
+        <p id="translatedText"></p>
+    </div>
+
+    <script>
+        let token = '';
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    token = data.token;
+                    alert('Login successful');
+                } else {
+                    alert('Login failed');
+                }
+            });
+        }
+
+        function translate() {
+            const text = document.getElementById('text').value;
+            const targetLang = document.getElementById('targetLang').value;
+
+            fetch('/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text, targetLang, token })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.translatedText) {
+                    document.getElementById('translatedText').innerText = data.translatedText;
+                } else {
+                    alert('Translation failed');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
